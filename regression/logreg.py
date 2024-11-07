@@ -10,7 +10,7 @@ class BaseRegressor():
         """
         # Initializing parameters: This is needed for gradient descent. 
         self.W = np.random.randn(num_feats + 1).flatten()
-        
+        self.first_W = self.W
         # Assigning Hyperparameters: You may need to adjust learning rate, batch size, etc for better accuracy 
         self.lr = learning_rate
         self.tol = tol
@@ -77,7 +77,7 @@ class BaseRegressor():
                 # Adding current loss to loss history record
                 self.loss_history_train.append(loss_train)
                 
-                # Storing previous weights and bias
+                # Storing previous weights 
                 prev_W = self.W
                 # Calculating gradient of loss function with respect to each parameter
                 grad = self.calculate_gradient(X_train, y_train)
@@ -115,8 +115,14 @@ class BaseRegressor():
         axs[0].set_ylabel('Train Loss')
         axs[1].set_ylabel('Val Loss')
         fig.tight_layout()
+    
+    def check_if_W_updates(self):
+        if np.any(self.W != self.first_W):
+            updating = True
+        else:
+            updating = False
+        return updating
         
-
 # import required modules
 class LogisticRegression(BaseRegressor):
     def __init__(self, num_feats, learning_rate=0.1, tol=0.0001, max_iter=100, batch_size=12):
@@ -150,6 +156,13 @@ class LogisticRegression(BaseRegressor):
         Returns: 
             gradients for a given loss function type np.ndarray (n-dimensional array)
         """
+        m = X.shape[0] #number of data points
+        z = np.dot(X, self.W) #multiplying the wieghts and X
+        p = 1 / (1 + np.exp(-z)) #sigmoid funtion
+        error = p - y #finding the error
+        gradient = np.dot(X.T, error) / m #calculating gradient
+        return gradient
+    
         
         
         pass
@@ -168,6 +181,14 @@ class LogisticRegression(BaseRegressor):
         Returns: 
             average loss 
         """
+        # notate this stuff
+        epsilon = 1e-15  # To prevent log(0)
+        y_pred = self.make_prediction(X)
+        y_pred = np.clip(y_pred, epsilon, 1 - epsilon)
+        loss = -np.mean(y * np.log(y_pred) + (1 - y) * np.log(1 - y_pred))
+        return loss
+    
+    
         pass
     
     def make_prediction(self, X) -> np.array:
@@ -182,8 +203,17 @@ class LogisticRegression(BaseRegressor):
         Returns: 
             y_pred for given X
         """
+        z = np.dot(X, self.W) #multiply fetures by weights
+        y_pred = 1 / (1 + np.exp(-z)) #normalize to a probability between 0 and 1
+        return y_pred
+
 
         pass
+
+
+
+
+
 
 
 

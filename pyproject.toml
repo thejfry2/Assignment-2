@@ -1,0 +1,18 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "regression"  # Name of your package
+version = "0.1.0"     # Initial version
+description = "Logistic Regression implementation for NSCLC dataset"
+authors = [
+    { name = "jeffrey", email = "jeffrey.campbell@ucsf.edu" }
+]
+dependencies = [
+    "numpy",
+    "pandas",
+    "matplotlib",
+    "scikit-learn",
+]
+
